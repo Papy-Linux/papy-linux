@@ -60,7 +60,7 @@ yes | pacstrap /mnt \
     base base-devel linux linux-firmware grub \
     xorg xorg-xinit i3 xdotool polkit ttf-dejavu \
     xterm firefox \
-    dhcpcd numlockx \
+    dhcpcd numlockx git python \
     || exit
 
 # Install polybar
@@ -68,6 +68,16 @@ echo "Installing polybar"
 install polybar.tar.zst /mnt/
 yes | arch-chroot /mnt pacman -U /polybar.tar.zst
 rm /mnt/polybar.tar.zst
+
+# Install human cursor theme
+arch-chroot /mnt bash -c '
+cd /tmp
+git clone https://aur.archlinux.org/xcursor-human
+chown -R nobody xcursor-human
+cd xcursor-human
+su nobody -s /bin/bash -c makepkg
+pacman -U *.tar.zst
+'
 
 # Config files
 echo "Installing configuration files"
