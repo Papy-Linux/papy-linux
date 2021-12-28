@@ -4,7 +4,7 @@ This distribution is open-source and every contribution is welcome. Though, it s
 
 !!! note
 
-    I'll always privilege my personnal usage of the distro, as I created it for my usage at the beginning. That means that if you make a contribution which is pertinent but which I don't want to have on my computers, I may refuse it. In such cases, don't hesitate forking it!
+    I'll always privilege my personnal usage of the distro, as I created it for my usage at the beginning. That means that if you make a contribution which is pertinent but which I don't want to have on my computers, I may refuse it. In such cases, don't hesitate to fork it!
 
 ## Components
 
