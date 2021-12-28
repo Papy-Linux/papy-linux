@@ -21,30 +21,19 @@ fi
 echo
 
 # Prompts
-# echo -en 'What is your keyboard layout? (example: en) \n> '
-# read klayout
-# loadkeys $klayout
-# echo
-# echo -en 'What disk will you use? (example: /dev/sda) \n> '
-# read disk
-# echo
-# echo -en 'What is your locale? (example: en_US UTF-8) \n> '
-# read locale
-# echo '$locale.'
-# echo
-# echo -en 'The same locale but with a dot? (example: en_US.UTF-8) \n> '
-# read locale_with_a_dot
-# echo
-# echo -en 'What is your timezone? (example: Europe/Paris) \n> '
-# read timezone
-# echo
-
-# While testing
-klayout="fr"
-disk="/dev/sda"
-locale="fr_FR UTF-8"
-locale_with_dot="fr_FR.UTF-8"
-timezone="Europe/Paris"
+echo -en 'What is your keyboard layout? (example: en) \n> '
+read klayout
+loadkeys $klayout
+echo
+echo -en 'What disk will you use? (example: /dev/sda) \n> '
+read disk
+echo
+echo -en 'What is your locale? (example: en_US) \n> '
+read locale
+echo
+echo -en 'What is your timezone? (example: Europe/Paris) \n> '
+read timezone
+echo
 
 username="user"
 
@@ -105,9 +94,9 @@ hwclock --systohc
 # Language
 echo "Setting locales"
 echo "en_US UTF-8
-$locale" > /mnt/etc/locale.gen
+$locale UTF-8" > /mnt/etc/locale.gen
 arch-chroot /mnt locale-gen
-echo "LANG=$locale_with_a_dot" > /mnt/etc/locale.conf
+echo "LANG=${locale}.UTF-8" > /mnt/etc/locale.conf
 # Keyboard layout
 echo "Setting keyboard layout"
 echo "KEYMAP=$klayout" > /mnt/etc/vconsole.conf
