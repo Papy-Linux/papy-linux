@@ -1,0 +1,4 @@
+.vagrant
+vagrant_out/*
+live/work
+live/out

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /opt/install
+bash install.sh

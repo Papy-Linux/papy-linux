@@ -1,0 +1,36 @@
+site_name: Papy Linux
+site_desc: Your grandfather's distribution
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      accent: green
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      accent: green
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+
+nav:
+  - index.md
+  - installation.md
+  - contributing.md
+
+repo_url: https://github.com/victorbnl/papy-linux
+repo_name: victorbnl/papy-linux
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences

@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Quit if UEFI
+if [[ -d /sys/firmware/efi/efivars ]]; then
+    echo "UEFI isn't supported yet, please boot in BIOS mode."
+    exit
+fi
+
+echo
+
+# Warning
+echo 'THIS WILL ERASE ALL DATA ON YOUR DISK'
+echo
+echo 'Additionnally, this is still in early developement and very likely to break things on your computer, or not to work.'
+echo
+echo -n 'Proceed? [y/N] '
+read proceed
+if [[ $proceed != "y" ]]; then
+    exit
+fi
+echo
+
+# Prompts
+# echo -en 'What is your keyboard layout? (example: en) \n> '
+# read klayout
+# loadkeys $klayout
+# echo
+# echo -en 'What disk will you use? (example: /dev/sda) \n> '
+# read disk
+# echo
+# echo -en 'What is your locale? (example: en_US UTF-8) \n> '
+# read locale
+# echo '$locale.'
+# echo
+# echo -en 'The same locale but with a dot? (example: en_US.UTF-8) \n> '
+# read locale_with_a_dot
+# echo
+# echo -en 'What is your timezone? (example: Europe/Paris) \n> '
+# read timezone
+# echo
+
+# While testing
+klayout="fr"
+disk="/dev/sda"
+locale="fr_FR UTF-8"
+locale_with_dot="fr_FR.UTF-8"
+timezone="Europe/Paris"
+
+username="user"
+
+# Enable ntp
+echo "Enabling ntp"
+timedatectl set-ntp true
+
+# Configure disk if EFI
+# echo "System is UEFI"
+# parted -s $disk mklabel gpt
+# parted -s $disk mkpart efi 1MiB 512MiB
+# parted -s $disk mkpart root 512MiB 100%
+# mkfs.fat -F 32 ${disk}1
+# mkfs.ext4 ${disk}2
+# mount ${disk}2 /mnt
+# mount ${disk}1 /mnt/boot/efi
+
+# Configure disk
+echo "Creating dos partition table, 4GB swap and root partition on $disk"
+parted -s $disk \
+    mklabel msdos \
+    mkpart primary 1MiB 4096MiB \
+    mkpart primary 4096MiB 100% || exit
+echo "Creating the filesystems"
+mkswap ${disk}1 || exit
+mkfs.ext4 -F ${disk}2 || exit
+echo "Mounting partitions"
+swapon ${disk}1
+mount ${disk}2 /mnt || exit
+
+# Install system
+echo "Installing everything (pactstrap)"
+yes | pacstrap /mnt \
+    base base-devel linux linux-firmware grub \
+    xorg xorg-xinit i3 xdotool polkit ttf-dejavu \
+    xterm firefox \
+    dhcpcd numlockx \
+    || exit
+
+# Install polybar
+echo "Installing polybar"
+install polybar.tar.zst /mnt/
+yes | arch-chroot /mnt pacman -U /polybar.tar.zst
+rm /mnt/polybar.tar.zst
+
+# Config files
+echo "Installing configuration files"
+(cd rootfs ; find -type f -exec install -D {} /mnt/{} \;)
+
+# Fstab
+echo "Generating fstab"
+genfstab -U /mnt >> /mnt/etc/fstab || exit
+
+# Timezone
+echo "Setting timezone"
+ln -sf "/mnt/usr/share/zoneinfo/$timezone" /mnt/etc/localtime
+hwclock --systohc
+# Language
+echo "Setting locales"
+echo "en_US UTF-8
+$locale" > /mnt/etc/locale.gen
+arch-chroot /mnt locale-gen
+echo "LANG=$locale_with_a_dot" > /mnt/etc/locale.conf
+# Keyboard layout
+echo "Setting keyboard layout"
+echo "KEYMAP=$klayout" > /mnt/etc/vconsole.conf
+
+# Bootloader
+echo "Installing grub bootloader"
+arch-chroot /mnt grub-install --target=i386-pc $disk || exit
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg || exit
+
+# Root password
+echo -e "root\nroot" | arch-chroot /mnt passwd root
+
+# Create user
+echo "Creating the user"
+arch-chroot /mnt useradd -m -G wheel -p $(openssl passwd -1 "$pass") user || exit
+echo -e "user\nuser" | arch-chroot /mnt passwd user
+
+# Xorg keyboard layout
+echo "Setting X keyboard layout"
+mkdir -p /mnt/etc/X11/xorg.conf.d/
+echo "Section \"InputClass\"
+        Identifier \"system-keyboard\"
+        MatchIsKeyboard \"on\"
+        Option \"XkbLayout\" \"$klayout\"
+EndSection" > /mnt/etc/X11/xorg.conf.d/00-keyboard.conf
+
+# Enable network service dhcpcd
+echo "Setting up network"
+arch-chroot /mnt systemctl enable dhcpcd
+
+# Installation finished
+echo '
+    Installation finished.
+
+    You may type `reboot` to reboot your computer on the installed OS.
+    You can as well type `arch-chroot /mnt` if you need to modify things on the system before booting it.
+
+    Tip: to debug, you can open a terminal on the system with Win+Shift+T.
+
+    Enjoy Papy Linux!
+'
