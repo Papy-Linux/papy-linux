@@ -40,6 +40,8 @@ The installer doesn't support UEFI yet, as the computer I want to install the di
 
 It manages partitonning, locale setup, base system and packages installation.
 
+**Note:** you can see polybar binary is included directly in the repository. It's because compiling it from the AUR made the installation nearly twice longer.
+
 ## The distribution
 
 `live/airootfs/opt/install/rootfs/`
