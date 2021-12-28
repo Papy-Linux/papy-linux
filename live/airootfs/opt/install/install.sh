@@ -76,7 +76,7 @@ git clone https://aur.archlinux.org/xcursor-human
 chown -R nobody xcursor-human
 cd xcursor-human
 su nobody -s /bin/bash -c makepkg
-pacman -U *.tar.zst
+yes | pacman -U *.tar.zst
 '
 
 # Config files
