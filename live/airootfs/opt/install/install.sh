@@ -41,16 +41,6 @@ username="user"
 echo "Enabling ntp"
 timedatectl set-ntp true
 
-# Configure disk if EFI
-# echo "System is UEFI"
-# parted -s $disk mklabel gpt
-# parted -s $disk mkpart efi 1MiB 512MiB
-# parted -s $disk mkpart root 512MiB 100%
-# mkfs.fat -F 32 ${disk}1
-# mkfs.ext4 ${disk}2
-# mount ${disk}2 /mnt
-# mount ${disk}1 /mnt/boot/efi
-
 # Configure disk
 echo "Creating dos partition table, 4GB swap and root partition on $disk"
 parted -s $disk \
