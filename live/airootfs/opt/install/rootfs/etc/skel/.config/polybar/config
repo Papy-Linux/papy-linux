@@ -49,4 +49,4 @@ label = %time%
 [module/poweroff]
 type = custom/script
 exec = echo " "
-click-left = poweroff
+click-left = setxkbmap us && xdotool key Ctrl+q && sleep 1 && poweroff
