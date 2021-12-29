@@ -8,10 +8,13 @@ for_window [class="^.*"] border pixel 0
 for_window [class="XTerm"] floating enable
 bindsym $mod+Shift+t exec --no-startup-id xterm
 
+# Move windows
+floating_modifier $mod
+
 # Start polybar
 exec --no-startup-id polybar top
 # Wait for internet and start firefox
-exec --no-startup-id while ! ping 8.8.8.8 -c 1; do sleep 0.2; done && firefox
+exec --no-startup-id while ! ping 8.8.8.8 -c 1; do sleep 0.2; done && python ~/chromium/start.py
 
 # Enable numpad
 exec --no-startup-id numlockx on

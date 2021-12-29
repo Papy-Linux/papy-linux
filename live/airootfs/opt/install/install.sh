@@ -58,16 +58,27 @@ mount ${disk}2 /mnt || exit
 echo "Installing everything (pactstrap)"
 yes | pacstrap /mnt \
     base base-devel linux linux-firmware grub \
-    xorg xorg-xinit i3 xdotool polkit ttf-dejavu \
-    xterm firefox \
-    dhcpcd numlockx git python \
+    xorg-server xorg-xinit i3 xdotool polkit ttf-dejavu \
+    xterm chromium \
+    python python-pip \
+    dhcpcd numlockx git python picom \
     || exit
 
 # Install polybar
 echo "Installing polybar"
-install polybar.tar.zst /mnt/
-yes | arch-chroot /mnt pacman -U /polybar.tar.zst
-rm /mnt/polybar.tar.zst
+arch-chroot /mnt bash -c '
+cd /tmp
+git clone https://aur.archlinux.org/polybar
+chown -R nobody polybar
+cd polybar
+yes | pacman -Sy --asdeps cairo xcb-util-image xcb-util-wm xcb-util-xrm xcb-util-cursor alsa-lib libpulse libmpdclient libnl jsoncpp curl cmake python pkg-config python-sphinx python-packaging i3-wm
+su nobody -s /bin/bash -c makepkg
+yes | pacman -U *.tar.zst
+'
+
+# Install Material Icons
+mkdir -p /mnt/usr/share/fonts/TTF
+curl -o /mnt/usr/share/fonts/TTF/MaterialIcons-Regular.ttf 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIcons-Regular.ttf'
 
 # Install human cursor theme
 arch-chroot /mnt bash -c '
@@ -78,6 +89,9 @@ cd xcursor-human
 su nobody -s /bin/bash -c makepkg
 yes | pacman -U *.tar.zst
 '
+
+# Install chromium control server dependencies
+arch-chroot /mnt pip install selenium bottle
 
 # Config files
 echo "Installing configuration files"
