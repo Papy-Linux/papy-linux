@@ -15,5 +15,5 @@ airootfs_image_type="erofs"
 airootfs_image_tool_options=('-zlz4hc,12')
 file_permissions=(
   ["/etc/shadow"]="0:0:400"
-  ["/usr/local/bin/setup"]="0:0:755"
+  ["/usr/local/bin/i"]="0:0:755"
 )
