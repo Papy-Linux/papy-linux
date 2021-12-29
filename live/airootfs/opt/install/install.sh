@@ -66,15 +66,9 @@ yes | pacstrap /mnt \
 
 # Install polybar
 echo "Installing polybar"
-arch-chroot /mnt bash -c '
-cd /tmp
-git clone https://aur.archlinux.org/polybar
-chown -R nobody polybar
-cd polybar
-yes | pacman -Sy --asdeps cairo xcb-util-image xcb-util-wm xcb-util-xrm xcb-util-cursor alsa-lib libpulse libmpdclient libnl jsoncpp curl cmake python pkg-config python-sphinx python-packaging i3-wm
-su nobody -s /bin/bash -c makepkg
-yes | pacman -U *.tar.zst
-'
+install polybar.tar.zst /mnt/
+yes | arch-chroot /mnt pacman -U /polybar.tar.zst
+rm /mnt/polybar.tar.zst
 
 # Install Material Icons
 mkdir -p /mnt/usr/share/fonts/TTF
@@ -103,7 +97,7 @@ genfstab -U /mnt >> /mnt/etc/fstab || exit
 
 # Timezone
 echo "Setting timezone"
-ln -sf "/mnt/usr/share/zoneinfo/$timezone" /mnt/etc/localtime
+arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 hwclock --systohc
 # Language
 echo "Setting locales"
