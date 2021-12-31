@@ -25,12 +25,18 @@ echo -en 'What is your keyboard layout? (example: en) \n> '
 read klayout
 loadkeys $klayout
 echo
+
+lsblk
+echo
+
 echo -en 'What disk will you use? (example: /dev/sda) \n> '
 read disk
 echo
+
 echo -en 'What is your locale? (example: en_US) \n> '
 read locale
 echo
+
 echo -en 'What is your timezone? (example: Europe/Paris) \n> '
 read timezone
 echo
