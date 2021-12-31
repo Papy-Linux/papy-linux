@@ -22,6 +22,7 @@ theme:
 nav:
   - index.md
   - installation.md
+  - rustdesk.md
   - contributing.md
 
 repo_url: https://github.com/victorbnl/papy-linux
