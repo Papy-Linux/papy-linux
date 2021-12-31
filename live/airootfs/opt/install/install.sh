@@ -59,10 +59,21 @@ echo "Installing everything (pactstrap)"
 yes | pacstrap /mnt \
     base base-devel linux linux-firmware grub \
     xorg-server xorg-xinit i3 xdotool polkit ttf-dejavu \
-    xterm chromium \
+    xterm firefox \
     python python-pip \
     dhcpcd numlockx git python picom \
     || exit
+
+# Install cfs zen tweaks
+arch-chroot /mnt bash -c '
+cd /tmp
+git clone https://aur.archlinux.org/cfs-zen-tweaks
+chown -R nobody cfs-zen-tweaks
+cd cfs-zen-tweaks
+su nobody -s /bin/bash -c makepkg
+yes | pacman -U *.tar.zst
+systemctl enable --now cfs-zen-tweaks
+'
 
 # Install polybar
 echo "Installing polybar"
@@ -83,9 +94,6 @@ cd xcursor-human
 su nobody -s /bin/bash -c makepkg
 yes | pacman -U *.tar.zst
 '
-
-# Install chromium control server dependencies
-arch-chroot /mnt pip install selenium bottle
 
 # Config files
 echo "Installing configuration files"

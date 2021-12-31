@@ -27,7 +27,7 @@ cursor-click = pointer
 [module/homepage]
 type = custom/script
 exec = echo " "
-click-left = curl http://localhost:8080/home
+click-left = xdotool key Alt+Home
 
 [module/previouspage]
 type = custom/script
@@ -49,4 +49,4 @@ label = %time%
 [module/poweroff]
 type = custom/script
 exec = echo " "
-click-left = curl 'http://localhost:8080/close' && sleep 1 && poweroff
+click-left = setxkbmap us && xdotool key Ctrl+q ; sleep 1 ; poweroff
