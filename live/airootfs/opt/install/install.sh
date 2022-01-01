@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Quit if UEFI
-if [[ -d /sys/firmware/efi/efivars ]]; then
-    echo "UEFI isn't supported yet, please boot in BIOS mode."
-    exit
-fi
+# if [[ -d /sys/firmware/efi/efivars ]]; then
+#     echo "UEFI isn't supported yet, please boot in BIOS mode."
+#     exit
+# fi
 
 echo
 
@@ -48,17 +48,31 @@ echo "Enabling ntp"
 timedatectl set-ntp true
 
 # Configure disk
-echo "Creating dos partition table, 4GB swap and root partition on $disk"
-parted -s $disk \
-    mklabel msdos \
-    mkpart primary 1MiB 4096MiB \
-    mkpart primary 4096MiB 100% || exit
-echo "Creating the filesystems"
-mkswap ${disk}1 || exit
-mkfs.ext4 -F ${disk}2 || exit
-echo "Mounting partitions"
-swapon ${disk}1
-mount ${disk}2 /mnt || exit
+if [[ -d /sys/firmware/efi/efivars ]]; then
+    parted -s $disk \
+        mklabel gpt \
+        mkpart 'EFI' fat32 1MiB 501MiB \
+        mkpart 'swap' linux-swap 501MiB 4501MiB \
+        mkpart 'root' ext4 4501MiB 100% \
+        || exit
+    mkfs.fat -F 32 ${disk}1 || exit
+    mkswap ${disk}2 || exit
+    mkfs.ext4 -F ${disk}3 || exit
+    mount ${disk}3 /mnt || exit
+    swapon ${disk}2 || exit
+    mkdir /mnt/efi || exit
+    mount ${disk}1 /mnt/efi || exit
+else
+    parted -s $disk \
+        mklabel msdos \
+        mkpart primary 1MiB 4096MiB \
+        mkpart primary 4096MiB 100% \
+        || exit
+    mkswap ${disk}1 || exit
+    mkfs.ext4 -F ${disk}2 || exit
+    swapon ${disk}1
+    mount ${disk}2 /mnt || exit
+fi
 
 # Install system
 echo "Installing everything (pactstrap)"
@@ -124,8 +138,12 @@ echo "Setting keyboard layout"
 echo "KEYMAP=$klayout" > /mnt/etc/vconsole.conf
 
 # Bootloader
-echo "Installing grub bootloader"
-arch-chroot /mnt grub-install --target=i386-pc $disk || exit
+if [[ -d /sys/firmware/efi/efivars ]]; then
+    yes | arch-chroot /mnt pacman -S efibootmgr
+    arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/efi || exit
+else
+    arch-chroot /mnt grub-install --target=i386-pc $disk || exit
+fi
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg || exit
 
 # Root password

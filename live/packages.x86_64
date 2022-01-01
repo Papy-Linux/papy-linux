@@ -12,3 +12,4 @@ virtualbox-guest-utils-nox
 reflector
 parted
 dhcpcd
+dosfstools
