@@ -15,7 +15,7 @@ user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
 // Disable pages restore when Firefox crashed
 user_pref("browser.sessionstore.resume_from_crash", false);
 
-// Block sites asking for permissions by default
+// Prevent sites from asking for permissions by default
 user_pref("permissions.default.camera", 2);
 user_pref("permissions.default.desktop-notification", 2);
 user_pref("permissions.default.geo", 2);
