@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Quit if UEFI
-# if [[ -d /sys/firmware/efi/efivars ]]; then
-#     echo "UEFI isn't supported yet, please boot in BIOS mode."
-#     exit
-# fi
-
 echo
 
 # Warning
