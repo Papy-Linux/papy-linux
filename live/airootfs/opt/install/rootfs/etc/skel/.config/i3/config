@@ -14,7 +14,7 @@ floating_modifier $mod
 # Start polybar
 exec --no-startup-id polybar top
 # Wait for internet and start firefox
-exec --no-startup-id while ! ping 8.8.8.8 -c 1; do sleep 0.2; done && firefox "https://www.google.com"
+exec --no-startup-id while ! ping 8.8.8.8 -c 1; do sleep 0.1; done && while [ 1 ]; do firefox; done
 
 # Enable numpad
 exec --no-startup-id numlockx on
